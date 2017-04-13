@@ -132,14 +132,27 @@ namespace Biblio
             Form createBook = new CreateBook();
 
             createBook.ShowDialog();
+            Book book = DBManager.GetNewBook();
 
-            treeView.Nodes.Add(DBManager.GetNewBook());
+            TreeNode newNode = new TreeNode();
 
-            int numb = 0;
+            newNode.Text = "\"" + book.Name + "\"  " + book.Author;
+            newNode.Name = book.Name;
 
-            foreach (TreeNode node in treeView.Nodes) numb++;
+            BookExemplar exemplar = DBManager.GetNewExemplar();
 
-            treeView.Nodes[numb-1].Nodes.Add(DBManager.GetNewExemplar());
+            TreeNode newNode1 = new TreeNode();
+
+            newNode1.Text = string.Format("Инв. № {0}, Год издания: {1}, в наличии: {2}",
+                exemplar.InventoryNumber.ToString(),
+                exemplar.PublicationDate.ToString(),
+                exemplar.Presence.ToString());
+
+            newNode1.Name = exemplar.InventoryNumber.ToString();
+
+            newNode.Nodes.Add(newNode1);
+
+            treeView.Nodes.Add(newNode);
 
             Controls.Add(treeView);
 
@@ -163,7 +176,18 @@ namespace Biblio
 
             createBookExamplar.ShowDialog();
 
-            treeView.SelectedNode.Nodes.Add(DBManager.GetNewExemplar());
+            BookExemplar exemplar = DBManager.GetNewExemplar();
+
+            TreeNode newNode1 = new TreeNode();
+
+            newNode1.Text = string.Format("Инв. № {0}, Год издания: {1}, в наличии: {2}",
+                exemplar.InventoryNumber.ToString(),
+                exemplar.PublicationDate.ToString(),
+                exemplar.Presence.ToString());
+
+            newNode1.Name = exemplar.InventoryNumber.ToString();
+
+            treeView.SelectedNode.Nodes.Add(newNode1);
 
             Controls.Add(treeView);
         }

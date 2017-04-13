@@ -52,10 +52,9 @@ namespace Biblio
 
         }
 
-        public static TreeNode GetNewBook()
+        public static Book GetNewBook()
         {
-            TreeNode newNode = new TreeNode();
-
+            Book book = null;
             var con = System.Configuration.ConfigurationManager.ConnectionStrings["DBConnect"];
             OleDbConnection myOleDbConnection = new OleDbConnection(con.ConnectionString);
             OleDbCommand myOleDbCommand = myOleDbConnection.CreateCommand();
@@ -68,18 +67,16 @@ namespace Biblio
 
             if (dr.HasRows)
             {
-
                 while (dr.Read())
                 {
-                    newNode.Text = dr["Name"].ToString() + " \"  " + dr["Authors"].ToString();
-                    newNode.Name = dr["Name"].ToString();
+                    book = new Book(dr["Name"].ToString(), dr["Authors"].ToString());
                 }
-
             }
-
             myOleDbConnection.Close();
 
-            return newNode;
+            return book;
+
+
         }
 
         public static BookCatalog GetBookCatalog()
@@ -104,7 +101,7 @@ namespace Biblio
 
                     OleDbCommand myOleDbCommand2 = myOleDbConnection.CreateCommand();
                     myOleDbCommand2.CommandText = string.Format("{0}'{1}'",
-                        "SELECT [PublicationDate], [Код], [Presence] FROM BookExemplar WHERE Name = ",
+                        "SELECT [PublicationDate], [InventoryNumber], [Presence] FROM BookExemplar WHERE Name = ",
                         dr["Name"].ToString());
                     OleDbDataReader dr2 = myOleDbCommand2.ExecuteReader();
 
@@ -112,7 +109,7 @@ namespace Biblio
                     {
                         while (dr2.Read())
                         {
-                            BookExemplar exemplar = new BookExemplar(int.Parse(dr2["Код"].ToString()),
+                            BookExemplar exemplar = new BookExemplar(int.Parse(dr2["InventoryNumber"].ToString()),
                                 dr2["Presence"].ToString(),
                                 int.Parse(dr2["PublicationDate"].ToString()));
                             book.AddExemplar(exemplar);
@@ -147,9 +144,9 @@ namespace Biblio
             myOleDbConnection.Close();
         }
 
-        public static string GetNewExemplar()
+        public static BookExemplar GetNewExemplar()
         {
-            string resultString = "";
+            BookExemplar exemplar = null;
 
             var con = System.Configuration.ConfigurationManager.ConnectionStrings["DBConnect"];
             OleDbConnection myOleDbConnection = new OleDbConnection(con.ConnectionString);
@@ -163,18 +160,13 @@ namespace Biblio
 
             if (dr.HasRows)
             {
-
                 while (dr.Read())
                 {
-                    resultString += string.Format("Инв. № {0}, Год издания: {1}, в наличии: {2}",
-                               dr["InventoryNumber"].ToString(),
-                               dr["PublicationDate"].ToString(),
-                               dr["Presence"].ToString());
+                    exemplar = new BookExemplar(int.Parse(dr["InventoryNumber"].ToString()), dr["Presence"].ToString(), int.Parse(dr["PublicationDate"].ToString()));
                 }
-
             }
 
-            return resultString;
+            return exemplar;
         }
 
 
@@ -249,7 +241,7 @@ namespace Biblio
 
             int invNumb = int.Parse(inventoryNumber);
 
-            myOleDbCommand.CommandText = "DELETE * FROM BookExemplar WHERE [Код] = " + invNumb;
+            myOleDbCommand.CommandText = "DELETE * FROM BookExemplar WHERE [InventoryNumber] = " + invNumb;
 
             myOleDbConnection.Open();
 
