@@ -14,5 +14,11 @@ namespace Biblio
 
         public int InventoryNumber;
 
+        public Item(int inventoryNumber, string Presence)
+        {
+            this.InventoryNumber = inventoryNumber;
+            this.Presence = (presence) Enum.Parse(typeof(presence), Presence);
+        }
+
     }
 }

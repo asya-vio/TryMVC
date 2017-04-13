@@ -10,11 +10,9 @@ namespace Biblio
         {
             public int PublicationDate { get; set; }
 
-            public BookExemplar(int date, int InventoryNumber)
+            public BookExemplar( int InventoryNumber, string Presence, int date) : base(InventoryNumber,  Presence)
             {              
                 this.PublicationDate = date;
-                Presence = presence.yes;
-                this.InventoryNumber = InventoryNumber;
             }
         }
     }

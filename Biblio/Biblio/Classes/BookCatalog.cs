@@ -8,60 +8,33 @@ namespace Biblio
 {
     public class BookCatalog
     {
-        public List<BookExpertiseArea> ListOfExpertiseArea;
+        public List<Book> ListOfBook = new List<Book>();
 
-        public BookCatalog()
-        {
-            ListOfExpertiseArea = new List<BookExpertiseArea>();
-        }
+        public BookCatalog() { }
 
-        public void AddExpertiseArea(string NameOfArea)
-        {
-            ListOfExpertiseArea.Add(new BookExpertiseArea(NameOfArea));
-        }
-
-        public void DeleteExpertiseArea(string name)
-        {
-            int i;
-            for (i = 0; i < ListOfExpertiseArea.Count; i++)
-            {
-                if (ListOfExpertiseArea[i].Name == name)
-                {
-                    ListOfExpertiseArea.RemoveAt(i);
-                    break;
-                }
-            }
-            if (i == ListOfExpertiseArea.Count - 1)
-                throw new ArgumentException();
-        }
 
         private Book FindByAuthor(string authors)
         {
-            for (int i = 0; i < ListOfExpertiseArea.Count; i++)
+            for (int i = 0; i < ListOfBook.Count; i++)
             {
-                for (int j = 0; j < ListOfExpertiseArea[i].ListOfBook.Count; j++)
-                {
-                    if (ListOfExpertiseArea[i].ListOfBook[j].Author == authors)
-                        return ListOfExpertiseArea[i].ListOfBook[j];
-                }
+                if (ListOfBook[i].Author == authors)
+                    return ListOfBook[i];
             }
             throw new ArgumentException();
         }
 
         private Book FindByName(string name)
         {
-            for (int i = 0; i < ListOfExpertiseArea.Count; i++)
+            for (int i = 0; i < ListOfBook.Count; i++)
             {
-                for (int j = 0; j < ListOfExpertiseArea[i].ListOfBook.Count; j++)
-                {
-                    if (ListOfExpertiseArea[i].ListOfBook[j].Name == name)
-                        return ListOfExpertiseArea[i].ListOfBook[j];
-                }
+                if (ListOfBook[i].Name == name)
+                    return ListOfBook[i];
+
             }
             throw new ArgumentException();
         }
 
-    public Book FindBook(int choice, string authors, string name)
+        public Book FindBook(int choice, string authors, string name)
         {
             if (choice == 1)
             {
@@ -75,9 +48,27 @@ namespace Biblio
             }
         }
 
-        public List<BookExpertiseArea> Print()
+        public void AddBook(Book book)
         {
-            return ListOfExpertiseArea;
+            ListOfBook.Add(book);
+        }
+
+        public void DeleteBook(Book book)
+        {
+
+            for (int i = 0; i < ListOfBook.Count; i++)
+            {
+                if (ListOfBook[i].Name == book.Name)
+                {
+                    if (ListOfBook[i].Author == book.Author)
+                    {
+                        ListOfBook.RemoveAt(i);
+                        return;
+                    }
+
+                }
+            }
+            return;
         }
     }
 }

@@ -64,24 +64,23 @@ namespace Biblio
 
             List<BookExemplar> resultList = new List<BookExemplar>();
 
-            foreach (BookExpertiseArea expertiseArea in DataBase.Catalog.ListOfExpertiseArea)
+
+            foreach (Book book in DataBase.Catalog.ListOfBook)
             {
-                foreach (Book book in expertiseArea.ListOfBook)
+                foreach (BookExemplar bookExemplar in book.ListOfExemplar)
                 {
-                    foreach (BookExemplar bookExemplar in book.ListOfExemplar)
+
+                    foreach (ItemLending item in itemLendingList)
                     {
-
-                        foreach (ItemLending item in itemLendingList)
+                        if (item.InventoryNumber == bookExemplar.InventoryNumber)
                         {
-                            if (item.InventoryNumber == bookExemplar.InventoryNumber)
-                            {
-                                resultList.Add(bookExemplar);
-                            }
+                            resultList.Add(bookExemplar);
                         }
-
                     }
+
                 }
             }
+
             return resultList;
 
         }

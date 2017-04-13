@@ -17,9 +17,9 @@ namespace Biblio
             Name = name;
         }
 
-        public void AddExemplar(int PublicationDate, int InventoryNumber)
+        public void AddExemplar(BookExemplar exemplar)
         {
-            ListOfExemplar.Add(new BookExemplar(PublicationDate, InventoryNumber));
+            ListOfExemplar.Add(exemplar);
         }
 
         public void DeleteExemplar(int InventoryNumber)

@@ -71,7 +71,7 @@ namespace Biblio
 
                 while (dr.Read())
                 {
-                    newNode.Text  = dr["Name"].ToString() + " \"  " + dr["Authors"].ToString();
+                    newNode.Text = dr["Name"].ToString() + " \"  " + dr["Authors"].ToString();
                     newNode.Name = dr["Name"].ToString();
                 }
 
@@ -81,6 +81,56 @@ namespace Biblio
 
             return newNode;
         }
+
+        public static BookCatalog GetBookCatalog()
+        {
+            BookCatalog catalog = new BookCatalog();
+
+
+            var con = System.Configuration.ConfigurationManager.ConnectionStrings["DBConnect"];
+            OleDbConnection myOleDbConnection = new OleDbConnection(con.ConnectionString);
+
+            myOleDbConnection.Open();
+
+            OleDbCommand myOleDbCommand = myOleDbConnection.CreateCommand();
+            myOleDbCommand.CommandText = "SELECT [Name], [Authors] FROM Book";
+            OleDbDataReader dr = myOleDbCommand.ExecuteReader();
+
+            if (dr.HasRows)
+            {
+                while (dr.Read())
+                {
+                    Book book = new Book(dr["Name"].ToString(), dr["Authors"].ToString());
+
+                    OleDbCommand myOleDbCommand2 = myOleDbConnection.CreateCommand();
+                    myOleDbCommand2.CommandText = string.Format("{0}'{1}'",
+                        "SELECT [PublicationDate], [InventoryNumber], [Presence] FROM BookExemplar WHERE Name = ",
+                        dr["Name"].ToString());
+                    OleDbDataReader dr2 = myOleDbCommand2.ExecuteReader();
+
+                    if (dr2.HasRows)
+                    {
+                        while (dr2.Read())
+                        {
+                            BookExemplar exemplar = new BookExemplar(int.Parse(dr2["InventoryNumber"].ToString()),
+                                dr2["Presence"].ToString(),
+                                int.Parse(dr2["PublicationDate"].ToString()));
+                            book.AddExemplar(exemplar);
+
+                        }
+                    }
+                    dr2.Close();
+
+                    catalog.AddBook(book);
+
+                }
+            }
+            dr.Close();
+            myOleDbConnection.Close();
+
+            return catalog;
+        }
+
 
         public static void AddBookExemplar(string name, string inventoryNumber, string publicationDate, string presence)
         {
@@ -127,69 +177,6 @@ namespace Biblio
             return resultString;
         }
 
-
-        public static TreeView GetBookTree()
-        {
-            TreeView treeView = new TreeView();
-
-            var con = System.Configuration.ConfigurationManager.ConnectionStrings["DBConnect"];
-            OleDbConnection myOleDbConnection = new OleDbConnection(con.ConnectionString);
-
-            myOleDbConnection.Open();
-
-            OleDbCommand myOleDbCommand = myOleDbConnection.CreateCommand();
-            myOleDbCommand.CommandText = "SELECT [Name], [Authors] FROM Book";
-            OleDbDataReader dr = myOleDbCommand.ExecuteReader();
-
-            int n = 0;
-
-            if (dr.HasRows)
-            {
-                while (dr.Read())
-                {
-                    TreeNode newNode = new TreeNode();
-                    newNode.Text = "\"" + dr["Name"].ToString() + "\"  " + dr["Authors"].ToString();
-                    newNode.Name = dr["Name"].ToString();
-
-                    treeView.Nodes.Add(newNode);
-
-                    OleDbCommand myOleDbCommand2 = myOleDbConnection.CreateCommand();
-                    myOleDbCommand2.CommandText = string.Format("{0}'{1}'",
-                        "SELECT [PublicationDate], [InventoryNumber], [Presence] FROM BookExemplar WHERE Name = ",
-                        dr["Name"].ToString());
-                    OleDbDataReader dr2 = myOleDbCommand2.ExecuteReader();
-
-                    if (dr2.HasRows)
-                    {
-                        while (dr2.Read())
-                        {
-                            //string text = string.Format("Инв. № {0}, Год издания: {1}, в наличии: {2}",
-                            //    dr2["InventoryNumber"].ToString(),
-                            //    dr2["PublicationDate"].ToString(),
-                            //    dr2["Presence"].ToString());
-
-                            //treeView.Nodes[n].Nodes.Add(text);
-
-                            newNode.Text = string.Format("Инв. № {0}, Год издания: {1}, в наличии: {2}",
-                                dr2["InventoryNumber"].ToString(),
-                                dr2["PublicationDate"].ToString(),
-                                dr2["Presence"].ToString());
-
-                            newNode.Name = dr2["InventoryNumber"].ToString();
-                            treeView.Nodes[n].Nodes.Add(newNode);
-
-                        }
-                    }
-                    dr2.Close();
-                    n++;
-                }
-            }
-
-            dr.Close();
-            myOleDbConnection.Close();
-
-            return treeView;
-        }
 
         public static void WriteStudent(Student student)
         {

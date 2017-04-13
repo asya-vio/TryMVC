@@ -89,35 +89,36 @@ namespace Biblio
 
             ReadTree();
         }
-        //public void CopyNode(TreeNode node, TreeNodeCollection dest)
-        //{
-        //    TreeNode copy = new TreeNode(node.Name);
-        //    dest.Add(copy);
-        //    foreach (TreeNode child in node.Nodes)
-        //    {
-        //        CopyNode(child, copy.Nodes);
-        //    }
-        //}
+
         void ReadTree()
         {
             treeView.Nodes.Clear();
 
-            var treeView1 = DBManager.GetBookTree();
+            var catalog = DBManager.GetBookCatalog();
 
-            foreach (TreeNode node in treeView1.Nodes)
+            foreach (Book book in catalog.ListOfBook)
             {
                 TreeNode newNode = new TreeNode();
-                newNode.Nodes.Add(node);
+                newNode.Text = "\"" + book.Name + "\"  " + book.Author;
+                newNode.Name = book.Name;
 
+                foreach(BookExemplar exemplar in book.ListOfExemplar)
+                {
+                    TreeNode newNode1 = new TreeNode();
+
+                    newNode1.Text = string.Format("Инв. № {0}, Год издания: {1}, в наличии: {2}",
+                        exemplar.InventoryNumber.ToString(),
+                        exemplar.PublicationDate.ToString(),
+                        exemplar.Presence.ToString());
+
+                    newNode1.Name = exemplar.InventoryNumber.ToString();
+
+                    newNode.Nodes.Add(newNode1);
+
+                }
                 treeView.Nodes.Add(newNode);
+
             }
-
-            //foreach (TreeNode node in treeView1.Nodes)
-            //{
-            //    CopyNode(node, treeView.Nodes);
-            //}
-
-            treeView1.Nodes.Clear();
 
             Controls.Add(treeView);
 
