@@ -104,7 +104,7 @@ namespace Biblio
 
                     OleDbCommand myOleDbCommand2 = myOleDbConnection.CreateCommand();
                     myOleDbCommand2.CommandText = string.Format("{0}'{1}'",
-                        "SELECT [PublicationDate], [InventoryNumber], [Presence] FROM BookExemplar WHERE Name = ",
+                        "SELECT [PublicationDate], [Код], [Presence] FROM BookExemplar WHERE Name = ",
                         dr["Name"].ToString());
                     OleDbDataReader dr2 = myOleDbCommand2.ExecuteReader();
 
@@ -112,7 +112,7 @@ namespace Biblio
                     {
                         while (dr2.Read())
                         {
-                            BookExemplar exemplar = new BookExemplar(int.Parse(dr2["InventoryNumber"].ToString()),
+                            BookExemplar exemplar = new BookExemplar(int.Parse(dr2["Код"].ToString()),
                                 dr2["Presence"].ToString(),
                                 int.Parse(dr2["PublicationDate"].ToString()));
                             book.AddExemplar(exemplar);
@@ -236,15 +236,27 @@ namespace Biblio
             myOleDbConnection.Open();
 
             myOleDbCommand.ExecuteNonQuery();
+
+            myOleDbConnection.Close();
         }
 
         public static void DeleteBookExemplar(string inventoryNumber)
+
         {
             var con = System.Configuration.ConfigurationManager.ConnectionStrings["DBConnect"];
             OleDbConnection myOleDbConnection = new OleDbConnection(con.ConnectionString);
             OleDbCommand myOleDbCommand = myOleDbConnection.CreateCommand();
 
-            myOleDbCommand.CommandText = string.Format("{0}'{1}'", "DELETE * FROM BookExemplar WHERE [InventoryNumber] = ", int.Parse(inventoryNumber));
+            int invNumb = int.Parse(inventoryNumber);
+
+            myOleDbCommand.CommandText = "DELETE * FROM BookExemplar WHERE [Код] = " + invNumb;
+
+            myOleDbConnection.Open();
+
+            myOleDbCommand.ExecuteNonQuery();
+
+            myOleDbConnection.Close();
+
         }
 
 

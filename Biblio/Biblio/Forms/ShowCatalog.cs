@@ -83,9 +83,11 @@ namespace Biblio
             Controls.Add(addExemplarBookButton);
             Controls.Add(deleteExemplarBookButton);
             Controls.Add(treeView);
+
             addBookButton.Click += AddBookButton_Click;
             deleteBookButton.Click += deleteBookButton_Click;
             addExemplarBookButton.Click += AddExemplarBookButton_Click;
+            deleteExemplarBookButton.Click += DeleteExemplarBookButton_Click;
 
             ReadTree();
         }
